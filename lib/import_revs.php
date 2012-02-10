@@ -123,8 +123,8 @@ function update_builds()
 }
 
 chdir(SITE_ROOT . "/lib/source");
-// update_source();
-// update_revs();
+update_source();
+update_revs();
 
 chdir(SITE_ROOT);
 update_builds();
