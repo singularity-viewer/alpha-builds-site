@@ -9,7 +9,7 @@ if (PHP_SAPI != "cli") {
 // create table revs(id integer, hash varchar, author varchar, time timestamp, message text, diff text, primary key(id));
 // create index hash_index on revs(hash);
 
-define("SITE_ROOT", dirname(__file__) . "/..");
+define("SITE_ROOT", realpath(dirname(__file__) . "/.."));
 require_once SITE_ROOT . "/lib/init.php";
 
 function import_rev($id, $hash)
@@ -40,7 +40,7 @@ function import_rev($id, $hash)
 
 	$DB->query(
 	   kl_str_sql(
-		  "Insert into revs (id, hash, author, time, message) values (!i, !s, !s, !t, !s)",
+		  "insert into revs (id, hash, author, time, message) values (!i, !s, !s, !t, !s)",
 		                     $id, $hash, $author, $date, $msg));
   
 }
@@ -62,31 +62,55 @@ function update_source()
 	print implode("\n", $out) . "\n";
 }
 
+function update_revs()
+{
+	global $DB;
+
+	$revsStr = rtrim(`git rev-list HEAD | tac`);
+	$revs = explode("\n", $revsStr);
+	$nrRevs = count($revs);
+
+
+	$latest = 0;
+	$res = $DB->query("select max(id) as id from revs");
+	if ($row = $DB->fetchRow($res)) {
+		if ($DB->loadFromDbRow($dbLatest, $res, $row)) {
+			$latest = (int)$dbLatest->id;
+		}
+	}
+
+	print "Found $nrRevs revisions\n";
+	print "Latest revision in the database: $latest\n";
+
+	if ($latest < $nrRevs) {
+		for ($rev = $latest + 1; $rev <= $nrRevs; $rev++) {
+			import_rev($rev, $revs[$rev - 1]);
+		}
+	}
+}
+
+function update_builds()
+{
+	global $DB;
+
+	$builds = glob(SITE_ROOT . "/*_*_Setup.exe");
+	$latest = 0;
+
+	// check if table exists
+	if (!($res = $DB->query("select max(id) as id from builds"))) {
+		$DB->query("create table builds(nr integer, channel varchar, file varchar, primary key(nr, channel)");
+	}
+		
+
+	var_dump($builds);
+}
+
 chdir(SITE_ROOT . "/lib/source");
+// update_source();
+// update_revs();
 
-# update_source();
-
-$revsStr = rtrim(`git rev-list HEAD | tac`);
-$revs = explode("\n", $revsStr);
-$nrRevs = count($revs);
-
-
-$latest = 0;
-$res = $DB->query("select max(id) as id from revs");
-if ($row = $DB->fetchRow($res)) {
-	if ($DB->loadFromDbRow($dbLatest, $res, $row)) {
-		$latest = (int)$dbLatest->id;
-	}
-}
-
-print "Found $nrRevs revisions\n";
-print "Latest revision in the database: $latest\n";
-
-if ($latest < $nrRevs) {
-	for ($rev = $latest + 1; $rev <= $nrRevs; $rev++) {
-		import_rev($rev, $revs[$rev - 1]);
-	}
-}
+chdir(SITE_ROOT);
+update_builds();
 
 /*
  * Local variables:
