@@ -19,7 +19,7 @@ function __autoload($class)
  * Example: http://www.example.com/applications/app1/
  */
 
-define('REL_DIR', '');
+define('REL_DIR', 'singularity');
 
 if (!defined('URL_ROOT')) {
 	$init_port = "";
