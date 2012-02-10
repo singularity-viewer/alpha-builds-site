@@ -97,12 +97,29 @@ function update_builds()
 	$latest = 0;
 
 	// check if table exists
-	if (!($res = $DB->query("select max(id) as id from builds"))) {
-		$DB->query("create table builds(nr integer, channel varchar, file varchar, primary key(nr, channel)");
+	if (!($res = $DB->query("select count(*) as c from builds"))) {
+		$DB->query("create table builds(nr integer, chan varchar, version varchar, file varchar, primary key(nr, chan))");
 	}
-		
+	
+	for ($i=0; $i<count($builds); $i++) {
+		$file = basename($builds[$i]);
+		if (preg_match("|^(\w+)_(\d+)-(\d+)-(\d+)-(\d+)_|", $file, $m)) {
+			$chan = $m[1];
+			$major = $m[2];
+			$minor = $m[3];
+			$maintenance = $m[4];
+			$build = $m[5];
+			$version = "$major.$minor.$maintenance.$build";
+			$res = $DB->query(kl_str_sql("select count(*) as c from builds where nr=!i and chan=!s", $build, $chan));
+			$row = $DB->fetchRow($res);
+			if ($row["c"] === "0") {
+				$DB->query(kl_str_sql("insert into builds (nr, chan, version, file) ".
+									  "values (!i, !s, !s, !s)",
+									  $build, $chan, $version, $file));
+			}
+		}
+	}
 
-	var_dump($builds);
 }
 
 chdir(SITE_ROOT . "/lib/source");
