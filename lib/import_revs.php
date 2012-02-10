@@ -1,0 +1,98 @@
+#!/usr/bin/php
+<?php
+
+if (PHP_SAPI != "cli") {
+	print "Utility script 0x55424523.";
+	die();
+}
+
+// create table revs(id integer, hash varchar, author varchar, time timestamp, message text, diff text, primary key(id));
+// create index hash_index on revs(hash);
+
+define("SITE_ROOT", dirname(__file__) . "/..");
+require_once SITE_ROOT . "/lib/init.php";
+
+function import_rev($id, $hash)
+{
+	global $DB;
+
+	print "Importing revision number $id with hash $hash\n";
+	$log = explode("\n", rtrim(`git log -n1 $hash`));
+
+	$author = "";
+	if (preg_match("|Author:\\s*(.*)|i", $log[1], $m)) {
+		$author = $m[1];
+	}
+
+	$date = "";
+	if (preg_match("|Date:\\s*(.*)|i", $log[2], $m)) {
+		$date = strtotime($m[1]);
+	}
+
+	$msg = "";
+	$nrLog = count($log);
+	for ($i=4; $i<$nrLog; $i++) {
+		$msg .= substr($log[$i], 4);
+		if ($i<$nrLog-1) {
+			$msg .= "\n";
+		}
+	}
+
+	$DB->query(
+	   kl_str_sql(
+		  "Insert into revs (id, hash, author, time, message) values (!i, !s, !s, !t, !s)",
+		                     $id, $hash, $author, $date, $msg));
+  
+}
+
+function update_source()
+{
+	exec("git reset --hard", $out, $res);
+	if ($res) {
+		DBH::log("Command failed: ", implode("\n", $out));
+		return;
+	}
+
+	exec("git pull", $out, $res);
+	if ($res) {
+		DBH::log("Command failed: ", implode("\n", $out));
+		return;
+	}
+
+	print implode("\n", $out) . "\n";
+}
+
+chdir(SITE_ROOT . "/lib/source");
+
+# update_source();
+
+$revsStr = rtrim(`git rev-list HEAD | tac`);
+$revs = explode("\n", $revsStr);
+$nrRevs = count($revs);
+
+
+$latest = 0;
+$res = $DB->query("select max(id) as id from revs");
+if ($row = $DB->fetchRow($res)) {
+	if ($DB->loadFromDbRow($dbLatest, $res, $row)) {
+		$latest = (int)$dbLatest->id;
+	}
+}
+
+print "Found $nrRevs revisions\n";
+print "Latest revision in the database: $latest\n";
+
+if ($latest < $nrRevs) {
+	for ($rev = $latest + 1; $rev <= $nrRevs; $rev++) {
+		import_rev($rev, $revs[$rev - 1]);
+	}
+}
+
+/*
+ * Local variables:
+ * tab-width: 4
+ * c-basic-offset: 4
+ * End:
+ * vim600: noet sw=4 ts=4 fdm=marker
+ * vim<600: noet sw=4 ts=4
+ */
