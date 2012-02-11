@@ -45,7 +45,7 @@ Function print_build($current, $next)
 {
 	print "
 		<tr style=\"background-color: #303030;\">
-		  <th>" . htmlspecialchars($current->nr). "</th>
+		  <th><a href=\"#\">Build " . htmlspecialchars($current->nr). "</a></th>
 		  <th>" . htmlspecialchars($current->modified). " (" . Layout::since(strtotime($current->modified)) . " ago)</th>
 		  <th>" . htmlspecialchars($current->chan). "</th>
 		  <th><a href='" . URL_ROOT . "/" . $current->file . "'>Windows Installer <img src=\"" . IMG_ROOT . "/dl.gif\" /></a>&nbsp;&nbsp;
