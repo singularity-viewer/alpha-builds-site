@@ -53,3 +53,31 @@ a, a:link, a:hover, a:visited, a:active {
     text-align: center;
 }
 
+td, th {
+    text-align: left;
+    margin: 0;
+    padding: 3px 20px 3px 3px;
+    vertical-align: top;
+    display: table-cell;
+    border: none;
+}
+
+th {
+    border-bottom: solid 1px #404040;
+    background: url(images/container-bg.gif) top repeat-x;
+}
+
+.build-list {
+    padding: 0;
+    margin: 0;
+    border-spacing: 0;
+    width: 100%;
+    border: solid 1px #404040;
+}
+
+pre {
+    font-family: monospace;
+    font-size: 8pt;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}

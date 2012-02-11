@@ -98,7 +98,7 @@ function update_builds()
 
 	// check if table exists
 	if (!($res = $DB->query("select count(*) as c from builds"))) {
-		$DB->query("create table builds(nr integer, chan varchar, version varchar, file varchar, primary key(nr, chan))");
+		$DB->query("create table builds(nr integer, chan varchar, version varchar, file varchar, modified timestamp, primary key(nr, chan))");
 	}
 	
 	for ($i=0; $i<count($builds); $i++) {
@@ -109,13 +109,14 @@ function update_builds()
 			$minor = $m[3];
 			$maintenance = $m[4];
 			$build = $m[5];
+			$modified = filemtime(SITE_ROOT . "/" . $file);
 			$version = "$major.$minor.$maintenance.$build";
 			$res = $DB->query(kl_str_sql("select count(*) as c from builds where nr=!i and chan=!s", $build, $chan));
 			$row = $DB->fetchRow($res);
 			if ($row["c"] === "0") {
-				$DB->query(kl_str_sql("insert into builds (nr, chan, version, file) ".
-									  "values (!i, !s, !s, !s)",
-									  $build, $chan, $version, $file));
+				$DB->query(kl_str_sql("insert into builds (nr, chan, version, file, modified) ".
+									  "values (!i, !s, !s, !s, !t)",
+									  $build, $chan, $version, $file, $modified));
 			}
 		}
 	}
@@ -123,8 +124,8 @@ function update_builds()
 }
 
 chdir(SITE_ROOT . "/lib/source");
-update_source();
-update_revs();
+#update_source();
+#update_revs();
 
 chdir(SITE_ROOT);
 update_builds();

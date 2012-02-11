@@ -104,6 +104,14 @@ function kl_str_sql()
 	return $res;
  
 }
+
+function pre_dump($var, $die = false)
+{
+	print "<pre>";
+	var_dump($var);
+	print "</pre>";
+	if ($die) die();
+}
  
 /*
  * Local variables:

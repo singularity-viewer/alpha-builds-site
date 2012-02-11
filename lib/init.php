@@ -4,6 +4,7 @@ if (!defined('SITE_ROOT')) {
 }
 
 error_reporting(E_ALL ^ E_NOTICE);
+ini_set("display_errors", "true");
 
 if (!extension_loaded('kl')) {
 	require_once SITE_ROOT.'/lib/ext_kl.php';
