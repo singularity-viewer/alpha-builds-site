@@ -24,7 +24,7 @@ function print_changes($current, $next)
 			$gid = md5($author["email"]);
 			print '
             <tr>
-              <td rowspan="2" style="text-align: center;"><img src="http://www.gravatar.com/avatar/' . $gid . '?r=x&amp;d=mm&amp;s=64"/><br />' .
+              <td rowspan="2" style="text-align: center;"><img src="http://www.gravatar.com/avatar/' . $gid . '?r=x&amp;d=mm&amp;s=64" alt="Avatar"/><br />' .
 				htmlspecialchars($author["name"]) . '</td>
               <td><a href="https://github.com/siana/SingularityViewer/commit/' . htmlspecialchars($row["hash"]) . '">' . htmlspecialchars($row["hash"]) . '</a></td>
               <td>' . htmlspecialchars($row["time"]). 
@@ -48,7 +48,7 @@ Function print_build($current, $next)
 		  <th><a href=\"#\">Build " . htmlspecialchars($current->nr). "</a></th>
 		  <th>" . htmlspecialchars($current->modified). " (" . Layout::since(strtotime($current->modified)) . " ago)</th>
 		  <th>" . htmlspecialchars($current->chan). "</th>
-		  <th><a href='" . URL_ROOT . "/" . $current->file . "'>Windows Installer <img src=\"" . IMG_ROOT . "/dl.gif\" /></a>&nbsp;&nbsp;
+		  <th><a href='" . URL_ROOT . "/" . $current->file . "'>Windows Installer <img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download\"/></a>&nbsp;&nbsp;
               <a href='" . URL_ROOT . "/" . $current->file . ".log'>Build Log</a></th>
 		</tr>";
 	if ($next) {
