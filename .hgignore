@@ -4,4 +4,4 @@ syntax: glob
 *~
 *.log
 lib/source/*
-lib/signularity_revisions*
+lib/singularity_revisions*

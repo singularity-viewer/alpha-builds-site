@@ -12,81 +12,111 @@ if (PHP_SAPI != "cli") {
 define("SITE_ROOT", realpath(dirname(__file__) . "/.."));
 require_once SITE_ROOT . "/lib/init.php";
 
-function import_rev($id, $hash)
+function import_rev($raw)
 {
 	global $DB;
 
-	print "Importing revision number $id with hash $hash\n";
-	$log = explode("\n", rtrim(`git log -n1 $hash`));
+	$log = explode("\n", rtrim($raw));
 
+	$hash = $log[0];
 	$author = "";
-	if (preg_match("|Author:\\s*(.*)|i", $log[1], $m)) {
-		$author = $m[1];
-	}
-
 	$date = "";
-	if (preg_match("|Date:\\s*(.*)|i", $log[2], $m)) {
-		$date = strtotime($m[1]);
-	}
-
 	$msg = "";
+	$inMsg = false;
 	$nrLog = count($log);
-	for ($i=4; $i<$nrLog; $i++) {
-		$msg .= substr($log[$i], 4);
-		if ($i<$nrLog-1) {
-			$msg .= "\n";
+
+	for ($i=0; $i<$nrLog; $i++) {
+		if ($inMsg) {
+			$msg .=  substr($log[$i], 4);
+			if ($i<$nrLog-1) {
+				$msg .= "\n";
+			}
+		} else {
+			if (preg_match("|^author\\s*([^>]*>)\\s*([\\d]+)\\s*(.*)|i", $log[$i], $m)) {
+				$author = $m[1];
+				$date = (int)$m[2];
+			} else if  (!trim($log[$i])) {
+				$inMsg = true;
+			}
 		}
 	}
 
 	$DB->query(
 	   kl_str_sql(
-		  "insert into revs (id, hash, author, time, message) values (!i, !s, !s, !t, !s)",
-		                     $id, $hash, $author, $date, $msg));
+		  "insert into revs (hash, author, time, message) values (!s, !s, !t, !s)",
+		                     $hash, $author, $date, $msg));
   
 }
 
-function update_source()
+function save_build_changes($changes)
 {
-	exec("git reset --hard", $out, $res);
-	if ($res) {
-		DBH::log("Command failed: ", implode("\n", $out));
-		return;
-	}
+	global $DB;
 
-	exec("git pull", $out, $res);
-	if ($res) {
-		DBH::log("Command failed: ", implode("\n", $out));
-		return;
+	$DB->query("begin transaction");
+	if (!($res = $DB->query("delete from changes"))) {
+		$DB->query("create table changes (build integer, revisions text, primary key(build))");
 	}
+	$DB->query("commit");
 
-	print implode("\n", $out) . "\n";
+	$DB->query("begin transaction");
+	foreach ($changes as $buildNr => $revs) {
+		$DB->query(kl_str_sql("insert into changes (build, revisions) values (!i, !s)", $buildNr, implode(",", $revs)));
+	}
+	$DB->query("commit");
+
 }
 
 function update_revs()
 {
 	global $DB;
 
-	$revsStr = rtrim(`git rev-list HEAD | tac`);
-	$revs = explode("\n", $revsStr);
+	$DB->query("begin transaction"); 
+	if (!($res = $DB->query("delete from revs"))) {
+		$DB->query("create table revs(hash varchar, author varchar, time timestamp, message text, diff text, primary key(hash))");
+	}
+
+	$DB->query("commit"); 
+
+	$DB->query("begin transaction"); 
+	$revs = array_reverse(explode(chr(0), rtrim(`git rev-list HEAD --header`)));
 	$nrRevs = count($revs);
 
+	print "Importing $nrRevs revisions\n";
 
-	$latest = 0;
-	$res = $DB->query("select max(id) as id from revs");
-	if ($row = $DB->fetchRow($res)) {
-		if ($DB->loadFromDbRow($dbLatest, $res, $row)) {
-			$latest = (int)$dbLatest->id;
+	for ($i=0; $i<$nrRevs; $i++) {
+		import_rev($revs[$i]);
+	}
+
+	$res = $DB->query("commit");
+
+	$revs = explode("\n", rtrim(`git rev-list HEAD`));
+
+	$res = 0;
+	$c =0;
+	$changesAt = array();
+
+	while (true) {
+		exec("git reset --soft HEAD~ 2>&1", $out, $res);
+		if ($res != 0) {
+			break;
+		} else {
+			$c++;
+			$newRevs = explode("\n", rtrim(`git rev-list HEAD`));
+			$changes = array_diff($revs, $newRevs);
+			$nrChanges = count($changes);
+			$build = count($revs);
+			$revs = $newRevs;
+			$changesAt[$build] = $changes;
+			print $nrChanges . " changes in build $build\n";
+			if ($build < 2169) break; // this is when we started building
 		}
 	}
 
-	print "Found $nrRevs revisions\n";
-	print "Latest revision in the database: $latest\n";
+	save_build_changes($changesAt);
 
-	if ($latest < $nrRevs) {
-		for ($rev = $latest + 1; $rev <= $nrRevs; $rev++) {
-			import_rev($rev, $revs[$rev - 1]);
-		}
-	}
+	print "Number resets: $c\n";
+	exec("git fetch --all 2>&1");
+
 }
 
 function update_builds()
@@ -123,8 +153,9 @@ function update_builds()
 
 }
 
+$DB->query("PRAGMA synchronous = OFF");
 chdir(SITE_ROOT . "/lib/source");
-update_source();
+exec("git fetch --all");
 update_revs();
 
 chdir(SITE_ROOT);

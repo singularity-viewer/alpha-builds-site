@@ -13,16 +13,11 @@ function parse_email($email)
 	return $ret;
 }
 
-function print_changes($current, $next)
+function print_changeset($row)
 {
-	global $DB;
-	if ($res = $DB->query(kl_str_sql("select * from revs where id<=!i and id>!i", $current->nr, $next->nr))) {
-		print '<table style="width: 100%;">';
-
-		while ($row = $DB->fetchRow($res)) {
-			$author = parse_email($row["author"]);
-			$gid = md5($author["email"]);
-			print '
+	$author = parse_email($row["author"]);
+	$gid = md5($author["email"]);
+	print '
             <tr>
               <td rowspan="2" style="text-align: center;"><img src="http://www.gravatar.com/avatar/' . $gid . '?r=x&amp;d=mm&amp;s=64" alt="Avatar"/><br />' .
 				htmlspecialchars($author["name"]) . '</td>
@@ -33,8 +28,43 @@ function print_changes($current, $next)
            <tr>
              <td colspan="2" width="99%"><pre>' . htmlspecialchars($row["message"]) . '</pre></td>
            </tr>';
+}
 
-		#	pre_dump($row);
+function sort_by_date($a, $b) 
+{
+	if ($a["time"] < $b["time"]) {
+		return 1;
+	} else if ($a["time"] > $b["time"]) {
+		return -1;
+	}
+	return 0;
+}
+
+function print_changes($current, $next)
+{
+	global $DB;
+	$revs = array();
+	if (!($res = $DB->query(kl_str_sql("select revisions from changes where build<=!i and build>!i order by build desc", $current->nr, $next->nr)))) {
+		return;
+	} else {
+		while ($row = $DB->fetchRow($res)) {
+			$revs = array_merge($revs, explode(",", $row["revisions"]));
+		}
+	}
+
+	if ($res = $DB->query("select * from revs where hash in ('" . implode("','", $revs) . "')")) {
+		print '<table style="width: 100%;">';
+
+		$changesets = array();
+
+		while ($row = $DB->fetchRow($res)) {
+			$changesets[] = $row;
+		}
+
+		usort($changesets, "sort_by_date");
+
+		foreach ($changesets as $change) {
+			print_changeset($change);
 		}
 
 		print '</table>';

@@ -38,7 +38,7 @@ class DBH
 		$this->db_user = $db_user;
 		$this->db_host = $db_host;
 
-		$this->dbh = @sqlite_popen($db_name, 0666, $error_msg);
+		$this->dbh = @sqlite_open($db_name, 0666, $error_msg);
 
 		if (!$this->dbh) {
 			DBH::log("[error] connection to database failed: $error_msg");

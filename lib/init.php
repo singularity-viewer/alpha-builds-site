@@ -56,7 +56,7 @@ if (!defined('IMG_ROOT')) {
 
 $DB = new DBH();
 
-$DB_NAME = SITE_ROOT . '/lib/signularity_revisions.db';
+$DB_NAME = SITE_ROOT . '/lib/singularity_revisions.db';
 /* $DB_USER = 'gigaprims';
    $DB_PASS = 'secrit';
    $DB_HOST = 'localhost';
