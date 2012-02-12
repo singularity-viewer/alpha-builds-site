@@ -82,9 +82,10 @@ Function print_build($current, $next)
               <a href='" . URL_ROOT . "/" . $current->file . ".log'>Build Log</a></th>
 		</tr>";
 	if ($next) {
-		print '<tr><td colspan="4">';
+		print '<tr><td colspan="4">
+        <a href="javascript:void(0)" id="toggle_link_'. $current->nr . '" onclick="javascript:toggleChanges('. $current->nr . ')">Show changes &gt;&gt;</a><div style="display: none;" id="changes_' . $current->nr . '">';
 		print_changes($current, $next);
-		print "</td></tr>";
+		print "</div></td></tr>";
 	}
 
 }

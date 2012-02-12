@@ -38,6 +38,30 @@ class Layout
     <link rel="stylesheet" type="text/css" href="<?php print URL_ROOT ?>/buildsite.css"/>
     <link rel="shortcut icon" href="<?php print IMG_ROOT ?>/favicon.ico" type="image/x-icon" />
     <title>Singularity Viewer Automated Build System</title>
+
+<script type="text/javascript">
+//<![CDATA[
+    function toggleChanges(id)
+    {
+      var change = document.getElementById("changes_" + id);
+      var link = document.getElementById("toggle_link_" + id);
+
+      if (change) {
+	if (change.style.display == "block") {
+	  change.style.display = "none";
+	  link.innerHTML = "Show changes &gt;&gt;";
+	} else {
+	  change.style.display = "block";
+	  link.innerHTML = "Hide changes &lt;&lt;";
+	}
+      }
+
+      return false;
+    }
+	   
+//]]>
+</script>
+
   </head>
   <body>
       <div id="everything">
