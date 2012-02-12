@@ -19,7 +19,7 @@ function print_changeset($row)
 	$gid = md5($author["email"]);
 	print '
             <tr>
-              <td rowspan="2" style="text-align: center;"><img src="http://www.gravatar.com/avatar/' . $gid . '?r=x&amp;d=mm&amp;s=64" alt="Avatar"/><br />' .
+              <td rowspan="2" style="text-align: center;"><img src="http://www.gravatar.com/avatar/' . $gid . '?r=x&amp;d=mm&amp;s=48" alt="Avatar"/><br />' .
 				htmlspecialchars($author["name"]) . '</td>
               <td><a href="https://github.com/siana/SingularityViewer/commit/' . htmlspecialchars($row["hash"]) . '">' . htmlspecialchars($row["hash"]) . '</a></td>
               <td>' . htmlspecialchars($row["time"]). 
@@ -75,7 +75,7 @@ Function print_build($current, $next)
 {
 	print "
 		<tr style=\"background-color: #303030;\">
-		  <th><a href=\"#\">Build " . htmlspecialchars($current->nr). "</a></th>
+		  <th><a href=\"javascript:void(0)\" onclick=\"javascript:toggleChanges({$current->nr})\">Build " . htmlspecialchars($current->nr). "</a></th>
 		  <th>" . htmlspecialchars($current->modified). " (" . Layout::since(strtotime($current->modified)) . " ago)</th>
 		  <th>" . htmlspecialchars($current->chan). "</th>
 		  <th><a href='" . URL_ROOT . "/" . $current->file . "'>Windows Installer <img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download\"/></a>&nbsp;&nbsp;
