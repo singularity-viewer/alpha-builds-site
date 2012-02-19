@@ -25,6 +25,7 @@ define('REL_DIR', 'singularity');
 if (!defined('URL_ROOT')) {
 	$init_port = "";
 	$init_ssl = strlen($_SERVER["HTTPS"]) > 0 ? true:false;
+	define('USE_SSL', $init_ssl);
 
 	$init_url = $init_ssl ? "https://" : "http://";
 

@@ -17,9 +17,11 @@ function print_changeset($row)
 {
 	$author = parse_email($row["author"]);
 	$gid = md5($author["email"]);
+	$avatar = (USE_SSL ? "https://secure.gravatar.com" : "http://www.gravatar.com") .
+		"/avatar/$gid?r=x&amp;d=mm&amp;s=48";
 	print '
             <tr>
-              <td rowspan="2" style="text-align: center;"><img src="http://www.gravatar.com/avatar/' . $gid . '?r=x&amp;d=mm&amp;s=48" alt="Avatar"/><br />' .
+              <td rowspan="2" style="text-align: center;"><img src="' . $avatar . '" alt="Avatar"/><br />' .
 				htmlspecialchars($author["name"]) . '</td>
               <td><a href="https://github.com/siana/SingularityViewer/commit/' . htmlspecialchars($row["hash"]) . '">' . htmlspecialchars($row["hash"]) . '</a></td>
               <td>' . htmlspecialchars($row["time"]). 
@@ -71,11 +73,11 @@ function print_changes($current, $next)
 	}
 }
 
-Function print_build($current, $next)
+Function print_build($current, $next, $buildNr)
 {
 	print "
 		<tr style=\"background-color: #303030;\">
-		  <th><a href=\"javascript:void(0)\" onclick=\"javascript:toggleChanges({$current->nr})\">Build " . htmlspecialchars($current->nr). "</a></th>
+		  <th><a href=\"" . URL_ROOT ."?build_id={$current->nr}\">Build " . htmlspecialchars($current->nr). "</a></th>
 		  <th>" . htmlspecialchars($current->modified). " (" . Layout::since(strtotime($current->modified)) . " ago)</th>
 		  <th>" . htmlspecialchars($current->chan). "</th>
 		  <th><a href='" . URL_ROOT . "/" . $current->file . "'>Windows Installer <img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download\"/></a>&nbsp;&nbsp;
@@ -83,7 +85,9 @@ Function print_build($current, $next)
 		</tr>";
 	if ($next) {
 		print '<tr><td colspan="4">
-        <a href="javascript:void(0)" id="toggle_link_'. $current->nr . '" onclick="javascript:toggleChanges('. $current->nr . ')">Show changes &gt;&gt;</a><div style="display: none;" id="changes_' . $current->nr . '">';
+        <a href="javascript:void(0)" id="toggle_link_'. $current->nr . '" onclick="javascript:toggleChanges('. $current->nr . ')">' .
+	    ($buildNr ? 'Hide changes &lt;&lt' : 'Show changes &gt;&gt;') .
+        '</a><div ' . ($buildNr ? '' : 'style="display: none;"') . ' id="changes_' . $current->nr . '">';
 		print_changes($current, $next);
 		print "</div></td></tr>";
 	}
@@ -98,7 +102,16 @@ $pageSize = 20;
 
 $builds = array();
 
-if ($res = $DB->query(kl_str_sql("select * from builds where chan=!s order by nr desc limit !i", $chan, $pageSize + 1))) {
+$buildNr = 0;
+$where = "";
+
+if (isset($_GET["build_id"])) {
+	$buildNr = (int)$_GET["build_id"];
+	$pageSize = 1;
+	$where = kl_str_sql(" and nr <= !i ", $buildNr); 
+}
+
+if ($res = $DB->query(kl_str_sql("select * from builds where chan=!s $where order by nr desc limit !i", $chan, $pageSize + 1))) {
 	while ($row = $DB->fetchRow($res)) {
 		
 		$build = new stdClass;
@@ -115,7 +128,7 @@ if ($nrBuilds) {
 
 	for ($i = 0; $i < $pageSize; $i++) {
 		if (!isset($builds[$i])) continue;
-		print_build($builds[$i], $builds[$i + 1]);
+		print_build($builds[$i], $builds[$i + 1], $buildNr);
 	}
 
 	print '</table>';

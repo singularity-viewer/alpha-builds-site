@@ -36,6 +36,7 @@ class Layout
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <link rel="stylesheet" type="text/css" href="<?php print URL_ROOT ?>/buildsite.css"/>
+    <link href="<?php print URL_ROOT ?>/feed.php" rel="alternate" title="Singularity Automatic Development Builds" type="application/atom+xml" />
     <link rel="shortcut icon" href="<?php print IMG_ROOT ?>/favicon.ico" type="image/x-icon" />
     <title>Singularity Viewer Automated Build System</title>
 
@@ -67,7 +68,7 @@ class Layout
       <div id="everything">
       <div id="page-wrapper">
       <div id="header"></div>
-      <div class="container"><p style="font-size: 20px;">Automated Build System</p>
+      <div class="container"><a href="<?php print URL_ROOT ?>" style="font-size: 20px;">Automated Build System</a><br/><br/>
   
 
 <?php
