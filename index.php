@@ -42,11 +42,11 @@ function sort_by_date($a, $b)
 	return 0;
 }
 
-function print_changes($current, $next)
+function print_changes($current, $next, $chan)
 {
 	global $DB;
 	$revs = array();
-	if (!($res = $DB->query(kl_str_sql("select revisions from changes where build<=!i and build>!i order by build desc", $current->nr, $next->nr)))) {
+	if (!($res = $DB->query(kl_str_sql("select revisions from changes where chan=!s and build<=!i and build>!i order by build desc", $chan, $current->nr, $next->nr)))) {
 		return;
 	} else {
 		while ($row = $DB->fetchRow($res)) {
@@ -54,7 +54,7 @@ function print_changes($current, $next)
 		}
 	}
 
-	if ($res = $DB->query("select * from revs where hash in ('" . implode("','", $revs) . "')")) {
+	if ($res = $DB->query(kl_str_sql("select * from revs where chan=!s and hash in ('" . implode("','", $revs) . "')", $chan))) {
 		print '<table style="width: 100%;">';
 
 		$changesets = array();
@@ -73,7 +73,7 @@ function print_changes($current, $next)
 	}
 }
 
-Function print_build($current, $next, $buildNr)
+Function print_build($current, $next, $buildNr, $chan)
 {
 	print "
 		<tr style=\"background-color: #303030;\">
@@ -88,15 +88,31 @@ Function print_build($current, $next, $buildNr)
         <a href="javascript:void(0)" id="toggle_link_'. $current->nr . '" onclick="javascript:toggleChanges('. $current->nr . ')">' .
 	    ($buildNr ? 'Hide changes &lt;&lt' : 'Show changes &gt;&gt;') .
         '</a><div ' . ($buildNr ? '' : 'style="display: none;"') . ' id="changes_' . $current->nr . '">';
-		print_changes($current, $next);
+		print_changes($current, $next, $chan);
 		print "</div></td></tr>";
 	}
 
 }
 
+function chan_selector($current_chan)
+{
+	global $CHANS;
+	print '<form method="GET">';
+	print 'Select channel&nbsp;<select name="chan" onchange="this.form.submit()">';
+	foreach($CHANS as $chan => $ref) {
+		print "<option value=\"$chan\"" . ($current_chan == $chan ? " selected" : "") . ">$chan</option>";
+	}
+	print '</select><noscript><input type="submit" value="Change"></noscript></form>';
+
+}
+
 Layout::header();
 
-$chan = "SingularityAlpha";
+if (isset($_GET["chan"]) && isset($CHANS[$_GET["chan"]])) {
+	$chan = $_GET["chan"];
+} else {
+	$chan = "SingularityMultiWearable";
+}
 
 $pageSize = 20;
 
@@ -109,6 +125,8 @@ if (isset($_GET["build_id"])) {
 	$buildNr = (int)$_GET["build_id"];
 	$pageSize = 1;
 	$where = kl_str_sql(" and nr <= !i ", $buildNr); 
+} else {
+	chan_selector($chan);
 }
 
 if ($res = $DB->query(kl_str_sql("select * from builds where chan=!s $where order by nr desc limit !i", $chan, $pageSize + 1))) {
@@ -128,7 +146,7 @@ if ($nrBuilds) {
 
 	for ($i = 0; $i < $pageSize; $i++) {
 		if (!isset($builds[$i])) continue;
-		print_build($builds[$i], $builds[$i + 1], $buildNr);
+		print_build($builds[$i], $builds[$i + 1], $buildNr, $chan);
 	}
 
 	print '</table>';

@@ -55,6 +55,7 @@ if (!defined('IMG_ROOT')) {
 }
 
 
+$CHANS = array("SingularityAlpha" => "HEAD", "SingularityMultiWearable" => "refs/remotes/shyotl/V2MultiWear");
 $DB = new DBH();
 
 $DB_NAME = SITE_ROOT . '/lib/singularity_revisions.db';

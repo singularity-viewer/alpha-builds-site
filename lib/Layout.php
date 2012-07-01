@@ -80,7 +80,7 @@ class Layout
        </div><!-- container -->
        <div class="container">
         <table style="width: 100%; border: none; padding: 0;"><tr>
-         <td class="bottom-links"><a href="http://www.singularityviewer.org/">Sigularity Main Site</a></td>
+         <td class="bottom-links"><a href="http://www.singularityviewer.org/">Singularity Main Site</a></td>
          <td class="bottom-links"><a href="http://www.singularityviewer.org/about">About</a></td>
          <td class="bottom-links"><a href="http://code.google.com/p/singularity-viewer/issues/">Issue Tracker</a></td>
          <td class="bottom-links"><a href="https://github.com/siana/SingularityViewer">Source Tracker</a></td>
