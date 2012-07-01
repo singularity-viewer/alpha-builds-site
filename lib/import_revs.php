@@ -165,7 +165,7 @@ function update_builds()
 $DB->query("PRAGMA synchronous = OFF");
 chdir(SITE_ROOT . "/lib/source");
 exec("git fetch --all");
-update_revs("SingularityMultiWearable");
+update_revs();
 die();
 
 chdir(SITE_ROOT);
