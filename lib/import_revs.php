@@ -166,7 +166,6 @@ $DB->query("PRAGMA synchronous = OFF");
 chdir(SITE_ROOT . "/lib/source");
 exec("git fetch --all");
 update_revs();
-die();
 
 chdir(SITE_ROOT);
 update_builds();
