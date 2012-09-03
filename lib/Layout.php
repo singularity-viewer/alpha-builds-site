@@ -83,7 +83,7 @@ class Layout
          <td class="bottom-links"><a href="http://www.singularityviewer.org/">Singularity Main Site</a></td>
          <td class="bottom-links"><a href="http://www.singularityviewer.org/about">About</a></td>
          <td class="bottom-links"><a href="http://code.google.com/p/singularity-viewer/issues/">Issue Tracker</a></td>
-         <td class="bottom-links"><a href="https://github.com/siana/SingularityViewer">Source Tracker</a></td>
+         <td class="bottom-links"><a href="https://github.com/singularity-viewer/SingularityViewer">Source Tracker</a></td>
       <td width="50%" style="text-align: right;">&copy; 2012 Singularity Viewer Project</td>
         </tr></table>
        </div> 

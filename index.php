@@ -96,6 +96,7 @@ Function print_build($current, $next, $buildNr, $chan)
 
 function chan_selector($current_chan)
 {
+//	return;
 	global $CHANS;
 	print '<form method="GET">';
 	print 'Select channel&nbsp;<select name="chan" onchange="this.form.submit()">';
@@ -111,7 +112,8 @@ Layout::header();
 if (isset($_GET["chan"]) && isset($CHANS[$_GET["chan"]])) {
 	$chan = $_GET["chan"];
 } else {
-	$chan = "SingularityMultiWearable";
+	// $chan = "SingularityMultiWearable";
+	$chan = "SingularityAlpha";
 }
 
 $pageSize = 20;
