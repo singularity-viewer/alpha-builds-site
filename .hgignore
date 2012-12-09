@@ -1,5 +1,8 @@
 syntax: glob
 *.exe
+*.bz2
+*.dmg
+*.zip
 *.bak
 *~
 *.log
