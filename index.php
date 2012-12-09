@@ -80,9 +80,18 @@ Function print_build($current, $next, $buildNr, $chan)
 		  <th><a href=\"" . URL_ROOT ."?build_id={$current->nr}\">Build " . htmlspecialchars($current->nr). "</a></th>
 		  <th>" . htmlspecialchars($current->modified). " (" . Layout::since(strtotime($current->modified)) . " ago)</th>
 		  <th>" . htmlspecialchars($current->chan). "</th>
-		  <th><a href='" . URL_ROOT . "/" . $current->file . "'>Windows Installer <img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download\"/></a>&nbsp;&nbsp;
-              <a href='" . URL_ROOT . "/" . $current->file . ".log'>Build Log</a></th>
-		</tr>";
+		  <th><a href='" . URL_ROOT . "/" . $current->file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Windows Build\"/>&nbsp;Windows</a>&nbsp;&nbsp;
+              <a href='" . URL_ROOT . "/" . $current->file . ".log'>Build Log</a>";
+
+	if ($current->linux_file) {
+		print "<br/><a href='" . URL_ROOT . "/" . $current->linux_file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build\"/>&nbsp;Linux</a>";
+	}
+
+	if ($current->osx_file) {
+		print "<br/><a href='" . URL_ROOT . "/" . $current->osx_file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Mac OS X Build\"/>&nbsp;Mac OS X</a>";
+	}
+
+	print "</th></tr>";
 	if ($next) {
 		print '<tr><td colspan="4">
         <a href="javascript:void(0)" id="toggle_link_'. $current->nr . '" onclick="javascript:toggleChanges('. $current->nr . ')">' .
@@ -136,6 +145,10 @@ if ($res = $DB->query(kl_str_sql("select * from builds where chan=!s $where orde
 		
 		$build = new stdClass;
 		$DB->loadFromDbRow($build, $res, $row);
+		$linux_file = "SingularityAlpha-i686-{$build->version}.tar.bz2";
+		$build->linux_file = file_exists($linux_file) ? $linux_file : false;
+		$osx_file = "SingularityAlpha_" . str_replace(".", "_", $build->version) . ".dmg";
+		$build->osx_file = file_exists($osx_file) ? $osx_file : false;
 		$builds[] = $build;
 	}
 }
