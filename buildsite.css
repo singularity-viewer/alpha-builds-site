@@ -60,7 +60,7 @@ a, a:link, a:hover, a:visited, a:active {
 td, th {
     text-align: left;
     margin: 0;
-    padding: 3px 20px 3px 3px;
+    padding: 3px 3px 3px 3px;
     vertical-align: top;
     display: table-cell;
     border: none;
@@ -69,6 +69,7 @@ td, th {
 th {
     border-bottom: solid 1px #404040;
     background: url(images/container-bg.gif) top repeat-x;
+    padding: 5px 3px 10px 3px;
 }
 
 .build-list {

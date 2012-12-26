@@ -48,11 +48,11 @@ class Layout
       var link = document.getElementById("toggle_link_" + id);
 
       if (change) {
-	if (change.style.display == "block") {
+	if (change.style.display == "") {
 	  change.style.display = "none";
 	  link.innerHTML = "Show changes &gt;&gt;";
 	} else {
-	  change.style.display = "block";
+	  change.style.display = "";
 	  link.innerHTML = "Hide changes &lt;&lt;";
 	}
       }

@@ -80,9 +80,10 @@ function update_revs()
 
 	foreach ($CHANS as $chan => $branch) {
 		exec("git fetch --all 2>&1");
-		if ($branch != "HEAD") {
-			exec("git reset --soft $branch 2>&1");
+		if ($branch == "HEAD") {
+			$branch = "FETCH_HEAD";
 		}
+		exec("git reset --soft $branch 2>&1");
 
 		$DB->query("begin transaction");
 		
@@ -116,7 +117,7 @@ function update_revs()
 				$revs = $newRevs;
 				$changesAt[$build] = $changes;
 				print $nrChanges . " changes in build $build\n";
-				if ($build < 2169) break; // this is when we started building
+				if ($build < 2883) break; // this is when we started building
 			}
 		}
 		save_build_changes($changesAt, $chan);

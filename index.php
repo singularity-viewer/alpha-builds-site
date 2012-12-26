@@ -55,7 +55,6 @@ function print_changes($current, $next, $chan)
 	}
 
 	if ($res = $DB->query(kl_str_sql("select * from revs where chan=!s and hash in ('" . implode("','", $revs) . "')", $chan))) {
-		print '<table style="width: 100%;">';
 
 		$changesets = array();
 
@@ -63,8 +62,12 @@ function print_changes($current, $next, $chan)
 			$changesets[] = $row;
 		}
 
-		usort($changesets, "sort_by_date");
+		if (count($changesets) == 0) return;
 
+		print '<table style="width: 99%;">';
+
+		usort($changesets, "sort_by_date");
+		
 		foreach ($changesets as $change) {
 			print_changeset($change);
 		}
@@ -77,8 +80,19 @@ Function print_build($current, $next, $buildNr, $chan)
 {
 	print "
 		<tr style=\"background-color: #303030;\">
-		  <th><a href=\"" . URL_ROOT ."?build_id={$current->nr}\">Build " . htmlspecialchars($current->nr). "</a></th>
-		  <th>" . htmlspecialchars($current->modified). " (" . Layout::since(strtotime($current->modified)) . " ago)</th>
+		  <th><a href=\"" . URL_ROOT ."?build_id={$current->nr}\">Build " . htmlspecialchars($current->nr). "</a><br/>";
+
+
+	if ($next) {
+		if (($current->linux_file && $current->osx_file)) {
+			print "<br/>";
+		}
+		print '
+            <a href="javascript:void(0)" id="toggle_link_'. $current->nr . '" onclick="javascript:toggleChanges('. $current->nr . ')">' .
+	        ($buildNr ? 'Hide changes &lt;&lt;' : 'Show changes &gt;&gt;') . '</a>';
+	}
+
+ 	print "</th><th>" . htmlspecialchars($current->modified). " (" . Layout::since(strtotime($current->modified)) . " ago)</th>
 		  <th>" . htmlspecialchars($current->chan). "</th>
 		  <th><a href='" . URL_ROOT . "/" . $current->file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Windows Build\"/>&nbsp;Windows</a>&nbsp;&nbsp;
               <a href='" . URL_ROOT . "/" . $current->file . ".log'>Build Log</a>";
@@ -92,27 +106,25 @@ Function print_build($current, $next, $buildNr, $chan)
 	}
 
 	print "</th></tr>";
+
 	if ($next) {
-		print '<tr><td colspan="4">
-        <a href="javascript:void(0)" id="toggle_link_'. $current->nr . '" onclick="javascript:toggleChanges('. $current->nr . ')">' .
-	    ($buildNr ? 'Hide changes &lt;&lt' : 'Show changes &gt;&gt;') .
-        '</a><div ' . ($buildNr ? '' : 'style="display: none;"') . ' id="changes_' . $current->nr . '">';
+		print '<tr' . ($buildNr ? '' : ' style="display: none;"') . ' id="changes_' . $current->nr . '"><td colspan="4">';
 		print_changes($current, $next, $chan);
-		print "</div></td></tr>";
+		print "</td></tr>";
 	}
 
 }
 
 function chan_selector($current_chan)
 {
-//	return;
+	//	return;
 	global $CHANS;
-	print '<form method="GET">';
+	print '<form method="get" action="index.php">';
 	print 'Select channel&nbsp;<select name="chan" onchange="this.form.submit()">';
 	foreach($CHANS as $chan => $ref) {
-		print "<option value=\"$chan\"" . ($current_chan == $chan ? " selected" : "") . ">$chan</option>";
+		print "<option value=\"$chan\"" . ($current_chan == $chan ? " selected=\"selected\"" : "") . ">$chan</option>";
 	}
-	print '</select><noscript><input type="submit" value="Change"></noscript></form>';
+	print '</select><noscript><input type="submit" value="Change"/></noscript></form><br />';
 
 }
 
