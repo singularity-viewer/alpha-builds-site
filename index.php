@@ -16,7 +16,7 @@ function parse_email($email)
 function print_changeset($row)
 {
 	$author = parse_email($row["author"]);
-	$gid = md5($author["email"]);
+	$gid = md5(strtolower($author["email"]));
 	$avatar = (USE_SSL ? "https://secure.gravatar.com" : "http://www.gravatar.com") .
 		"/avatar/$gid?r=x&amp;d=mm&amp;s=48";
 	print '
