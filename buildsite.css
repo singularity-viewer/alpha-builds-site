@@ -53,6 +53,10 @@ a, a:link, a:hover, a:visited, a:active {
     color: #e0e0e0;
 }
 
+a.dimmer {
+    color: #a0a0a0;
+}
+
 .bottom-links {
     text-align: center;
 }

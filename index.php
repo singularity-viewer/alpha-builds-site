@@ -88,14 +88,14 @@ Function print_build($current, $next, $buildNr, $chan)
 			print "<br/>";
 		}
 		print '
-            <a href="javascript:void(0)" id="toggle_link_'. $current->nr . '" onclick="javascript:toggleChanges('. $current->nr . ')">' .
+            <a class="dimmer" href="javascript:void(0)" id="toggle_link_'. $current->nr . '" onclick="javascript:toggleChanges('. $current->nr . ')">' .
 	        ($buildNr ? 'Hide changes &lt;&lt;' : 'Show changes &gt;&gt;') . '</a>';
 	}
 
  	print "</th><th>" . htmlspecialchars($current->modified). " (" . Layout::since(strtotime($current->modified)) . " ago)</th>
 		  <th>" . htmlspecialchars($current->chan). "</th>
 		  <th><a href='" . URL_ROOT . "/" . $current->file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Windows Build\"/>&nbsp;Windows</a>&nbsp;&nbsp;
-              <a href='" . URL_ROOT . "/" . $current->file . ".log'>Build Log</a>";
+              <a class='dimmer' href='" . URL_ROOT . "/" . $current->file . ".log'>Build Log</a>";
 
 	if ($current->linux_file) {
 		print "<br/><a href='" . URL_ROOT . "/" . $current->linux_file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build\"/>&nbsp;Linux</a>";
