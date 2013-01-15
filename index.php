@@ -84,7 +84,10 @@ Function print_build($current, $next, $buildNr, $chan)
 
 
 	if ($next) {
-		if (($current->linux_file && $current->osx_file)) {
+		if (($current->linux_file && $current->osx_file && $current->linux64_file)) {
+			print "<br/><br/>";
+		}
+		elseif (($current->linux_file && $current->osx_file)) {
 			print "<br/>";
 		}
 		print '
@@ -98,7 +101,11 @@ Function print_build($current, $next, $buildNr, $chan)
               <a class='dimmer' href='" . URL_ROOT . "/" . $current->file . ".log'>Build Log</a>";
 
 	if ($current->linux_file) {
-		print "<br/><a href='" . URL_ROOT . "/" . $current->linux_file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build\"/>&nbsp;Linux</a>";
+		print "<br/><a href='" . URL_ROOT . "/" . $current->linux_file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build (32 bit)\"/>&nbsp;Linux (32 bit)</a>";
+	}
+
+	if ($current->linux64_file) {
+		print "<br/><a href='" . URL_ROOT . "/" . $current->linux64_file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build (64 bit)\"/>&nbsp;Linux (64 bit)</a>";
 	}
 
 	if ($current->osx_file) {
@@ -157,10 +164,16 @@ if ($res = $DB->query(kl_str_sql("select * from builds where chan=!s $where orde
 		
 		$build = new stdClass;
 		$DB->loadFromDbRow($build, $res, $row);
+
 		$linux_file = "SingularityAlpha-i686-{$build->version}.tar.bz2";
 		$build->linux_file = file_exists($linux_file) ? $linux_file : false;
+
+		$linux64_file = "SingularityAlpha-x86_64-{$build->version}.tar.bz2";
+		$build->linux64_file = file_exists($linux64_file) ? $linux64_file : false;
+
 		$osx_file = "SingularityAlpha_" . str_replace(".", "_", $build->version) . ".dmg";
 		$build->osx_file = file_exists($osx_file) ? $osx_file : false;
+
 		$builds[] = $build;
 	}
 }
