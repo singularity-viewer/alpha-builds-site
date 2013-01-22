@@ -12,13 +12,14 @@ if (PHP_SAPI != "cli") {
 define("SITE_ROOT", realpath(dirname(__file__) . "/.."));
 require_once SITE_ROOT . "/lib/init.php";
 
-function import_rev($raw, $chan)
+function import_rev(&$existing, $raw, $chan)
 {
 	global $DB;
 
 	$log = explode("\n", rtrim($raw));
 
 	$hash = $log[0];
+	if (isset($existing[$hash])) return;
 	$author = "";
 	$date = "";
 	$msg = "";
@@ -48,35 +49,21 @@ function import_rev($raw, $chan)
   
 }
 
-function save_build_changes($changes, $chan)
-{
-	global $DB;
-
-
-	$DB->query("begin transaction");
-	foreach ($changes as $buildNr => $revs) {
-		$DB->query(kl_str_sql("insert into changes (build, chan, revisions) values (!i, !s, !s)", $buildNr, $chan, implode(",", $revs)));
-	}
-	$DB->query("commit");
-
-}
-
-function update_revs()
+function import_revs()
 {
 	global $DB, $CHANS;
 
 	$DB->query("begin transaction"); 
-	if (!($res = $DB->query("delete from revs"))) {
+	if (!($res = $DB->query("select * from revs"))) {
 		$DB->query("create table revs(hash varchar, chan varchar, author varchar, time timestamp, message text, diff text, primary key(hash))");
 	}
 
-	$DB->query("commit"); 
-
-	$DB->query("begin transaction");
-	if (!($res = $DB->query("delete from changes"))) {
-		$DB->query("create table changes (build integer, chan varchar, revisions text, primary key(build, chan))");
+	$existing_revs = array();
+	while ($row = $DB->fetchRow($res)) {
+		$existing_revs[$row['hash']] = 1;
 	}
-	$DB->query("commit");
+
+	$DB->query("commit"); 
 
 	foreach ($CHANS as $chan => $branch) {
 		exec("git fetch --all 2>&1");
@@ -92,41 +79,12 @@ function update_revs()
 
 		print "Importing $nrRevs revisions for $chan\n";
 
-		for ($i=0; $i<$nrRevs; $i++) {
-			import_rev($revs[$i], $chan);
+		for ($i = 0; $i < $nrRevs; $i++) {
+			import_rev($existing_revs, $revs[$i], $chan);
 		}
 
 		$res = $DB->query("commit");
-
-		$revs = explode("\n", rtrim(`git rev-list HEAD`));
-
-		$res = 0;
-		$c =0;
-		$changesAt = array();
-
-		while (true) {
-			exec("git reset --soft HEAD^ 2>&1", $out, $res);
-			if ($res != 0) {
-				break;
-			} else {
-				$c++;
-				$newRevs = explode("\n", rtrim(`git rev-list HEAD`));
-				$changes = array_diff($revs, $newRevs);
-				$nrChanges = count($changes);
-				$build = count($revs);
-				$revs = $newRevs;
-				$changesAt[$build] = $changes;
-				print $nrChanges . " changes in build $build\n";
-				if ($build < 2883) break; // this is when we started building
-			}
-		}
-		save_build_changes($changesAt, $chan);
 	}
-
-
-	print "Number resets: $c\n";
-	exec("git fetch --all 2>&1");
-	exec("git reset --soft $branch 2>&1");
 
 }
 
@@ -164,6 +122,47 @@ function update_builds()
 
 }
 
+function save_build_changes($changes, $chan)
+{
+	global $DB;
+
+
+	$DB->query("begin transaction");
+	foreach ($changes as $buildNr => $revs) {
+		$DB->query(kl_str_sql("delete from  changes where build=!i and chan=!s", $buildNr, $chan));
+		$DB->query(kl_str_sql("insert into changes (build, chan, revisions) values (!i, !s, !s)", $buildNr, $chan, implode(",", $revs)));
+	}
+	$DB->query("commit");
+
+}
+
+
+function set_changes($build, $chan)
+{
+	global $DB;
+
+	$DB->query("begin transaction");
+	if (!($res = $DB->query("select count(*) from changes"))) {
+		$DB->query("create table changes (build integer, chan varchar, revisions text, primary key(build, chan))");
+	}
+	$DB->query("commit");
+
+	if (!($res = $DB->query(kl_str_sql("select * from builds where chan=!s and nr<=!i order by nr desc", $chan, $build)))) {
+		return;
+	}
+
+	if (!($current = $DB->fetchRow($res))) return;
+	if (!($previous = $DB->fetchRow($res))) return;
+
+	chdir(SITE_ROOT . "/lib/source");
+	
+	$revs = explode("\n", rtrim(`git rev-list {$previous["hash"]}..{$current["hash"]}`));
+	$changes = array();
+	$changes[$build] = $revs;
+	save_build_changes($changes, $chan);
+}
+
+
 function add_build($build, $chan, $version, $hash)
 {
 	global $DB;
@@ -199,16 +198,16 @@ if (count($build_parts) != 4) {
 }
 $BUILD = $build_parts[3];
 
-print "$CHAN $VERSION $HASH $BUILD\n";
-add_build($BUILD, $CHAN, $VERSION, $HASH);
-
 $DB->query("PRAGMA synchronous = OFF");
 chdir(SITE_ROOT . "/lib/source");
 exec("git fetch --all");
-update_revs();
 
-chdir(SITE_ROOT);
-update_builds();
+import_revs();
+add_build($BUILD, $CHAN, $VERSION, $HASH);
+set_changes($BUILD, $CHAN);
+
+//chdir(SITE_ROOT);
+//update_builds();
 
 /*
  * Local variables:

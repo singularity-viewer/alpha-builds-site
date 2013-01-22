@@ -10,7 +10,7 @@ BUILD_LIST="/tmp/find_hash_tmp.bulds"
 
 function update_source() {
     cd $SOURCE
-    # git fetch --all
+    git fetch --all
     git reset --soft FETCH_HEAD
 }
 
@@ -36,3 +36,5 @@ cat "$BUILD_LIST" | while read build; do
 	fi
     done
 done
+
+git reset --soft FETCH_HEAD
