@@ -38,7 +38,7 @@ class DBH
 		$this->db_user = $db_user;
 		$this->db_host = $db_host;
 
-		$this->dbh = @sqlite_popen($db_name, 0666, $error_msg);
+		$this->dbh = @sqlite_open($db_name, 0666, $error_msg);
 
 		if (!$this->dbh) {
 			DBH::log("[error] connection to database failed: $error_msg");
@@ -54,7 +54,7 @@ class DBH
 
 		if (!$res) {
 			DBH::log("[error] ".$q);
-			DBH::log("[error_msg] " . $error_msg);
+			DBH::log("[error_msg] " . $error_msg . " " . @sqlite_error_string(@sqlite_last_error(($this->dbh))));
 			$this->last_error = $error_msg;
 
 			$e = debug_backtrace();
@@ -69,15 +69,6 @@ class DBH
 
 			return false;
 		} else {
-			if ($res !== TRUE) {
-				$result_id = (int)$res;
-				if (!isset($this->field_desc[$result_id])) {
-					$nf = sqlite_num_fields($res);
-					for ($i=0; $i<$nf; $i++) {
-						$this->field_desc[$result_id][sqlite_field_name($res, $i)] = sqlite_field_name($res, $i);
-					}
-				}
-			}
 			DBH::log("[success] ".$q);
 			return $res;
 		}
@@ -86,19 +77,14 @@ class DBH
 	function loadFromDbRow(&$obj, $res, $row)
 	{
 		foreach ($row as $symbolicName => $nativeName){
-			if ($nativeName && ($this->field_desc[(int)$res][$symbolicName] == "timestamp" ||
-								$this->field_desc[(int)$res][$symbolicName] == "date")) {
-				$obj->{$symbolicName} = strtotime($nativeName);
-			} else {
-				$obj->{$symbolicName} = $nativeName;
-			}
+			$obj->{$symbolicName} = $nativeName;
 		}
 		return true;
 	}
 
 	function fetchRow($res)
 	{
-		return @sqlite_fetch_array($res);
+		return @sqlite_fetch_array($res, SQLITE_ASSOC);
 	}
   
 }

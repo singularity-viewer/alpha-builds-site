@@ -1,0 +1,9 @@
+*.exe
+*.bz2
+*.dmg
+*.zip
+*.bak
+*~
+*.log
+lib/source/*
+lib/singularity_revisions*

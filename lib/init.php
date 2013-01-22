@@ -4,6 +4,7 @@ if (!defined('SITE_ROOT')) {
 }
 
 error_reporting(E_ALL ^ E_NOTICE);
+ini_set("display_errors", "true");
 
 if (!extension_loaded('kl')) {
 	require_once SITE_ROOT.'/lib/ext_kl.php';
@@ -19,11 +20,12 @@ function __autoload($class)
  * Example: http://www.example.com/applications/app1/
  */
 
-define('REL_DIR', '');
+define('REL_DIR', 'singularity');
 
 if (!defined('URL_ROOT')) {
 	$init_port = "";
 	$init_ssl = strlen($_SERVER["HTTPS"]) > 0 ? true:false;
+	define('USE_SSL', $init_ssl);
 
 	$init_url = $init_ssl ? "https://" : "http://";
 
@@ -53,9 +55,12 @@ if (!defined('IMG_ROOT')) {
 }
 
 
+// $CHANS = array("SingularityAlpha" => "HEAD", "SingularityMultiWearable" => "refs/remotes/shyotl/V2MultiWear");
+$CHANS = array("SingularityAlpha" => "HEAD");
+
 $DB = new DBH();
 
-$DB_NAME = SITE_ROOT . '/lib/signularity_revisions.db';
+$DB_NAME = SITE_ROOT . '/lib/singularity_revisions.db';
 /* $DB_USER = 'gigaprims';
    $DB_PASS = 'secrit';
    $DB_HOST = 'localhost';

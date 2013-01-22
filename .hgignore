@@ -1,7 +1,0 @@
-syntax: glob
-*.exe
-*.bak
-*~
-*.log
-lib/source/*
-lib/signularity_revisions*
