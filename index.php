@@ -23,7 +23,7 @@ function print_changeset($row)
             <tr>
               <td rowspan="2" style="text-align: center;"><img src="' . $avatar . '" alt="Avatar"/><br />' .
 				htmlspecialchars($author["name"]) . '</td>
-              <td><a href="https://github.com/siana/SingularityViewer/commit/' . htmlspecialchars($row["hash"]) . '">' . htmlspecialchars($row["hash"]) . '</a></td>
+              <td><a href="https://github.com/singularity-viewer/SingularityViewer/commit/' . htmlspecialchars($row["hash"]) . '">' . htmlspecialchars($row["hash"]) . '</a></td>
               <td>' . htmlspecialchars($row["time"]). 
               ' (' . Layout::since(strtotime($row["time"])) . ' ago)</td>
            </tr>
