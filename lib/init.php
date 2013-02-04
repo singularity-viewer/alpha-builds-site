@@ -57,6 +57,7 @@ if (!defined('IMG_ROOT')) {
 
 // $CHANS = array("SingularityAlpha" => "HEAD", "SingularityMultiWearable" => "refs/remotes/shyotl/V2MultiWear");
 $CHANS = array("SingularityAlpha" => "HEAD");
+define("KEEP_BUILDS", 50);
 
 $DB = new DBH();
 

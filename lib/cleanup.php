@@ -37,7 +37,7 @@ function get_old_builds($chan, $nrToKeep)
 }
 
 chdir(SITE_ROOT);
-$builds = get_old_builds("SingularityAlpha", 21);
+$builds = get_old_builds("SingularityAlpha", KEEP_BUILDS + 1);
 $nrBuilds = count($builds);
 
 for ($i=0; $i<$nrBuilds; $i++) {

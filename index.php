@@ -155,7 +155,7 @@ if (isset($_GET["chan"]) && isset($CHANS[$_GET["chan"]])) {
 	$chan = "SingularityAlpha";
 }
 
-$pageSize = 20;
+$pageSize = KEEP_BUILDS;
 
 $builds = array();
 
