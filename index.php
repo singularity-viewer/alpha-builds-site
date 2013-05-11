@@ -97,8 +97,12 @@ Function print_build($current, $next, $buildNr, $chan)
 
  	print "</th><th>" . htmlspecialchars($current->modified). " (" . Layout::since(strtotime($current->modified)) . " ago)</th>
 		  <th>" . htmlspecialchars($current->chan). "</th>
-		  <th><a href='" . URL_ROOT . "/" . $current->file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Windows Build\"/>&nbsp;Windows</a>&nbsp;&nbsp;
+		  <th>";
+
+	if ($current->file) {
+		print "<a href='" . URL_ROOT . "/" . $current->file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Windows Build\"/>&nbsp;Windows</a>&nbsp;&nbsp;
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . URL_ROOT . "/" . $current->file . ".log'>Build Log</a>";
+	}
 
 	if ($current->linux_file) {
 		print "<br/><a href='" . URL_ROOT . "/" . $current->linux_file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build (32 bit)\"/>&nbsp;Linux (32 bit)</a>";
