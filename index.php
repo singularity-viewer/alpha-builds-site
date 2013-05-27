@@ -83,19 +83,25 @@ Function print_build($current, $next, $buildNr, $chan)
 		  <th><a href=\"" . URL_ROOT ."?build_id={$current->nr}\">Build " . htmlspecialchars($current->nr). "</a><br/>";
 
 
+	$vspace = "";
 	if ($next) {
 		if (($current->linux_file && $current->osx_file && $current->linux64_file)) {
-			print "<br/><br/>";
+			$vspace = "<br/><br/>";
 		}
 		elseif (($current->linux_file && $current->osx_file)) {
-			print "<br/>";
+			$vspace = "<br/>";
 		}
-		print '
-            <a class="dimmer" href="javascript:void(0)" id="toggle_link_'. $current->nr . '" onclick="javascript:toggleChanges('. $current->nr . ')">' .
+
+		print $vspace .
+            '<a class="dimmer" href="javascript:void(0)" id="toggle_link_'. $current->nr . '" onclick="javascript:toggleChanges('. $current->nr . ')">' .
 	        ($buildNr ? 'Hide changes &lt;&lt;' : 'Show changes &gt;&gt;') . '</a>';
 	}
 
- 	print "</th><th>" . htmlspecialchars($current->modified). " (" . Layout::since(strtotime($current->modified)) . " ago)</th>
+ 	print "</th><th>" . htmlspecialchars($current->modified). " (" . Layout::since(strtotime($current->modified)) . " ago)<br/>";
+	print $vspace . '<a class="dimmer" title="See on GitHub" href="https://github.com/singularity-viewer/SingularityViewer/commits/' . $current->hash . '">';
+	print substr($current->hash, 0, 10) . "</a>";  
+
+	Print "</th>
 		  <th>" . htmlspecialchars($current->chan). "</th>
 		  <th>";
 
