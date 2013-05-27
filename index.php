@@ -84,6 +84,8 @@ Function print_build($current, $next, $buildNr, $chan)
 
 
 	$vspace = "";
+	$github = "https://github.com/singularity-viewer/SingularityViewer/";
+
 	if ($next) {
 		if (($current->linux_file && $current->osx_file && $current->linux64_file)) {
 			$vspace = "<br/><br/>";
@@ -98,7 +100,14 @@ Function print_build($current, $next, $buildNr, $chan)
 	}
 
  	print "</th><th>" . htmlspecialchars($current->modified). " (" . Layout::since(strtotime($current->modified)) . " ago)<br/>";
-	print $vspace . '<a class="dimmer" title="See on GitHub" href="https://github.com/singularity-viewer/SingularityViewer/commits/' . $current->hash . '">';
+
+	if ($next) {
+		$gh_link = $github . "compare/" . substr($next->hash, 0, 12) . "..." . substr($current->hash, 0, 12);
+	} else {
+		$gh_link = $github . "commits/" . $current->hash;
+	}
+
+	print $vspace . '<a class="dimmer" href="' . $gh_link . '">';
 	print substr($current->hash, 0, 10) . "</a>";  
 
 	Print "</th>
