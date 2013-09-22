@@ -112,7 +112,7 @@ function update_builds()
 			$version = "$major.$minor.$maintenance.$build";
 			$res = $DB->query(kl_str_sql("select count(*) as c from builds where nr=!i and chan=!s", $build, $chan));
 			$row = $DB->fetchRow($res);
-			if ($row["c"] === "0") {
+			if ($row["c"] == 0) {
 				$DB->query(kl_str_sql("insert into builds (nr, chan, version, file, modified) ".
 									  "values (!i, !s, !s, !s, !t)",
 									  $build, $chan, $version, $file, $modified));
@@ -174,7 +174,7 @@ function add_build($build, $chan, $version, $hash)
 	
 	$res = $DB->query(kl_str_sql("select count(*) as c from builds where nr=!i and chan=!s", $build, $chan));
 	$row = $DB->fetchRow($res);
-	if ($row["c"] === "0") {
+	if ($row["c"] == 0) {
 		$DB->query(kl_str_sql("insert into builds (nr, chan, version, hash, modified) ".
 							  "values (!i, !s, !s, !s, !t)",
 							  $build, $chan, $version, $hash, time() - date("Z")));

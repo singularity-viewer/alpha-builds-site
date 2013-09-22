@@ -82,6 +82,13 @@ if (!$DB->connect($DB_NAME, $DB_HOST, $DB_USER, $DB_PASS)) {
 
 */
 
+/*
+if (PHP_SAPI != "cli") {
+    header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 600));
+    header('Cache-Control:  max-age=' . (4 * 3600));
+}
+*/
+
 
 /* Prevent XSS attacks via PHP_SELF */
 $_SERVER['PHP_SELF'] = htmlspecialchars($_SERVER['PHP_SELF']);
