@@ -38,10 +38,10 @@ class DBH
 		$this->db_user = $db_user;
 		$this->db_host = $db_host;
 
-		$this->dbh = @sqlite_open($db_name, 0666, $error_msg);
-
-		if (!$this->dbh) {
-			DBH::log("[error] connection to database failed: $error_msg");
+		try {
+			$this->dbh = new SQLite3($db_name, SQLITE3_OPEN_READWRITE);
+		} catch (Exception $e) {
+			DBH::log("[error] connection to database failed: " . $e->getMessage());
 			return false;
 		} 
 
@@ -50,11 +50,12 @@ class DBH
 
 	function query($q)
 	{
-		$res = @sqlite_query($this->dbh, $q, SQLITE_BOTH, $error_msg);
+		$res = $this->dbh->query($q);
 
 		if (!$res) {
 			DBH::log("[error] ".$q);
-			DBH::log("[error_msg] " . $error_msg . " " . @sqlite_error_string(@sqlite_last_error(($this->dbh))));
+			$error_msg = $this->dbh->lastErrorMsg();
+			DBH::log("[error_msg] " . $error_msg);
 			$this->last_error = $error_msg;
 
 			$e = debug_backtrace();
@@ -84,7 +85,7 @@ class DBH
 
 	function fetchRow($res)
 	{
-		return @sqlite_fetch_array($res, SQLITE_ASSOC);
+		return $res->fetchArray();
 	}
   
 }
