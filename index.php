@@ -1,7 +1,11 @@
 <?php
 
+ini_set('display_errors', 'On');
+error_reporting(E_ALL);
+
 define("SITE_ROOT", realpath(dirname(__file__)));
 require_once SITE_ROOT . "/lib/init.php";
+
 
 function parse_email($email) 
 {
@@ -174,7 +178,12 @@ if (isset($_GET["chan"]) && isset($CHANS[$_GET["chan"]])) {
 	$chan = "SingularityAlpha";
 }
 
-$pageSize = KEEP_BUILDS;
+$page = 0;
+if (isset($_GET["page"])) {
+	$page = (int)$_GET["page"];
+ }
+
+$pageSize = 25;
 
 $builds = array();
 
@@ -189,7 +198,7 @@ if (isset($_GET["build_id"])) {
 	chan_selector($chan);
 }
 
-if ($res = $DB->query(kl_str_sql("select * from builds where chan=!s $where order by nr desc limit !i", $chan, $pageSize + 1))) {
+if ($res = $DB->query(kl_str_sql("select * from builds where chan=!s $where order by nr desc limit !i offset !i", $chan, $pageSize, $page * $pageSize))) {
 	while ($row = $DB->fetchRow($res)) {
 		
 		$build = new stdClass;
@@ -225,7 +234,17 @@ if ($nrBuilds) {
 	print '</table>';
 
 }
-	
+
+print "<br/>\n";
+
+if ($page > 0) {
+	print '<a href="?page=' . ($page - 1) . '">&lt;&lt; Previous</a>&nbsp&nbsp;';
+ }
+
+print '<a href="?page=' . ($page + 1) . '">Next &gt;&gt;</a>';
+
+
+
 Layout::footer();
 
 /*
