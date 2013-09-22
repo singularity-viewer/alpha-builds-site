@@ -177,7 +177,7 @@ function add_build($build, $chan, $version, $hash)
 	if ($row["c"] === "0") {
 		$DB->query(kl_str_sql("insert into builds (nr, chan, version, hash, modified) ".
 							  "values (!i, !s, !s, !s, !t)",
-							  $build, $chan, $version, $hash, time()));
+							  $build, $chan, $version, $hash, time() - date("Z")));
 	}
 }
 

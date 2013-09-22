@@ -6,7 +6,7 @@ class Layout
 
   function since($since)
   {
-    $since = time() - $since;
+    $since = time() - date("Z") - $since;
     $chunks = array(
 		    array(60 * 60 * 24 * 365 , 'year'),
 		    array(60 * 60 * 24 * 30 , 'month'),
