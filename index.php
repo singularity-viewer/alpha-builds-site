@@ -222,6 +222,27 @@ if ($res = $DB->query(kl_str_sql("select * from builds where chan=!s $where orde
 
 $nrBuilds = count($builds);
 
+if ($res = $DB->query(kl_str_sql("select count(*) from builds where chan=!s", $chan))) {
+	if ($row =  $DB->fetchRow($res)) {
+		$total = (int)$row[0];
+	}
+}
+
+
+$nextLink = "#";
+$prevLink = "#";
+
+if ($page > 0) $prevLink = "?page=" . ($page - 1);
+if ($page < (int)($total / $pageSize)) $nextLink = "?page=" . ($page + 1);
+
+$paginator .= '<a href="' . $prevLink . '">&lt;Previous</a>';
+
+$paginator .= "&nbsp;&nbsp;Page " . ($page + 1) . " of " . ceil($total / $pageSize) . "&nbsp;&nbsp;&nbsp;";
+
+$paginator .= '<a href="' . $nextLink . '">Next&gt;</a>';
+
+print $paginator;
+
 if ($nrBuilds) {
 	print '<table class="build-list">';
 
@@ -235,14 +256,7 @@ if ($nrBuilds) {
 
 }
 
-print "<br/>\n";
-
-if ($page > 0) {
-	print '<a href="?page=' . ($page - 1) . '">&lt;&lt; Previous</a>&nbsp&nbsp;';
- }
-
-print '<a href="?page=' . ($page + 1) . '">Next &gt;&gt;</a>';
-
+print "<br/>\n" . $paginator;
 
 
 Layout::footer();
