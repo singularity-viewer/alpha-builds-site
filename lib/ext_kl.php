@@ -4,7 +4,7 @@
 $php_str_sql_options_array = array(
 								   "str_sql_date_format" => "Y-m-d",
 								   "str_sql_datetime_format" => "Y-m-d H:i:s",
-								   "str_sql_quote_func" => "sqlite_escape_string");
+								   "str_sql_quote_func" => "SQLite3::escapeString");
 /**
  * This method validates the sql insert string must always be used in conjunction with an insert to the db
  * @return string
@@ -13,7 +13,6 @@ $php_str_sql_options_array = array(
 function kl_str_sql()
 {
 	GLOBAL $php_str_sql_options_array;
-	$f = $php_str_sql_options_array['str_sql_quote_func'];
  
 	$narg = func_num_args();
 	$args = func_get_args();
@@ -39,7 +38,7 @@ function kl_str_sql()
 				if (is_null($args[$narg])) {
 					$res .= 'NULL';
 				} else {
-					$res .= "'".$f($args[$narg])."'";
+					$res .= "'".SQLite3::escapeString($args[$narg])."'";
 				}
 				$narg++;
 				break;
