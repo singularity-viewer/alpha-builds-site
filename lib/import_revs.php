@@ -45,7 +45,7 @@ function import_rev(&$existing, $raw, $chan)
 	$DB->query(
 	   kl_str_sql(
 		  "insert into revs (hash, chan, author, time, message) values (!s, !s, !s, !t, !s)",
-		                     $hash, $chan, $author, $date, $msg));
+		  $hash, $chan, $author, $date - date("Z"), $msg));
   
 }
 
