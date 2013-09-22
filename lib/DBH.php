@@ -12,7 +12,6 @@ class DBH
 
 	function log($line)
 	{
-		return;
 		static $f = false;
 		static $failed = false;
 
