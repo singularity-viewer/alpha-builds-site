@@ -198,7 +198,7 @@ if (isset($_GET["build_id"])) {
 	chan_selector($chan);
 }
 
-if ($res = $DB->query(kl_str_sql("select * from builds where chan=!s $where order by nr desc limit !i offset !i", $chan, $pageSize, $page * $pageSize))) {
+if ($res = $DB->query(kl_str_sql("select * from builds where chan=!s $where order by nr desc limit !i offset !i", $chan, $pageSize + 1, $page * $pageSize))) {
 	while ($row = $DB->fetchRow($res)) {
 		
 		$build = new stdClass;
@@ -240,6 +240,8 @@ $paginator .= '<a href="' . $prevLink . '">&lt;Previous</a>';
 $paginator .= "&nbsp;&nbsp;Page " . ($page + 1) . " of " . ceil($total / $pageSize) . "&nbsp;&nbsp;&nbsp;";
 
 $paginator .= '<a href="' . $nextLink . '">Next&gt;</a>';
+
+if ($pageSize == 1) $paginator = "";
 
 print $paginator;
 
