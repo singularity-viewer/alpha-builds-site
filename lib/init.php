@@ -4,7 +4,7 @@ if (!defined('SITE_ROOT')) {
 }
 
 error_reporting(E_ALL ^ E_NOTICE);
-ini_set("display_errors", "true");
+ini_set("display_errors", "off");
 
 if (!extension_loaded('kl')) {
 	require_once SITE_ROOT.'/lib/ext_kl.php';
@@ -20,7 +20,7 @@ function __autoload($class)
  * Example: http://www.example.com/applications/app1/
  */
 
-define('REL_DIR', 'singularity');
+define('REL_DIR', 'alpha');
 
 if (!defined('URL_ROOT')) {
 	$init_port = "";
@@ -73,6 +73,7 @@ if (!$DB->connect($DB_NAME, $DB_HOST, $DB_USER, $DB_PASS)) {
 	die();
 }
 
+
 /*
 
   $S = new Session();
@@ -82,12 +83,10 @@ if (!$DB->connect($DB_NAME, $DB_HOST, $DB_USER, $DB_PASS)) {
 
 */
 
-/*
 if (PHP_SAPI != "cli") {
-    header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 600));
-    header('Cache-Control:  max-age=' . (4 * 3600));
-}
-*/
+	header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 2 * 3600));
+	header('Cache-Control:  max-age=' . (4 * 3600));
+ }
 
 
 /* Prevent XSS attacks via PHP_SELF */
@@ -100,4 +99,6 @@ $_SERVER['PHP_SELF'] = htmlspecialchars($_SERVER['PHP_SELF']);
  * vim600: sw=4 ts=4 fdm=marker
  * vim<600: sw=4 ts=4
  */
+
+
 ?>

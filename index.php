@@ -198,7 +198,7 @@ if (isset($_GET["build_id"])) {
 	chan_selector($chan);
 }
 
-if ($res = $DB->query(kl_str_sql("select * from builds where chan=!s $where order by nr desc limit !i offset !i", $chan, $pageSize + 1, $page * $pageSize))) {
+if ($res = $DB->query(kl_str_sql("select * from builds_all where chan=!s $where order by nr desc limit !i offset !i", $chan, $pageSize + 1, $page * $pageSize))) {
 	while ($row = $DB->fetchRow($res)) {
 		
 		$build = new stdClass;
@@ -222,7 +222,7 @@ if ($res = $DB->query(kl_str_sql("select * from builds where chan=!s $where orde
 
 $nrBuilds = count($builds);
 
-if ($res = $DB->query(kl_str_sql("select count(*) from builds where chan=!s", $chan))) {
+if ($res = $DB->query(kl_str_sql("select count(*) from builds_all where chan=!s", $chan))) {
 	if ($row =  $DB->fetchRow($res)) {
 		$total = (int)$row[0];
 	}
