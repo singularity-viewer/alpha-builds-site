@@ -15,6 +15,8 @@ function __autoload($class)
 	require_once(SITE_ROOT . '/lib/' . $class . '.php');
 }
 
+date_default_timezone_set("UTC");
+
 /* Directory relative to server root
  * No leading or trailing slash.
  * Example: http://www.example.com/applications/app1/

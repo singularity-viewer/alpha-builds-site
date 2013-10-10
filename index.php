@@ -6,6 +6,33 @@ error_reporting(E_ALL);
 define("SITE_ROOT", realpath(dirname(__file__)));
 require_once SITE_ROOT . "/lib/init.php";
 
+function get_downloads()
+{
+	global $DB;
+	
+	$ret = array();
+
+	if (!$res = $DB->query("select file_name from downloads")) return;
+
+	while ($row = $DB->fetchRow($res)) {
+		$ret[] = $row["file_name"];
+	}
+
+	return $ret;
+}
+
+$all_downloads = get_downloads();
+
+function download_exists($file_name)
+{
+	global $all_downloads;
+	return in_array($file_name, $all_downloads);
+}
+
+function download_link($file_name)
+{
+	return "http://sourceforge.net/projects/singularityview/files/alphas/{$file_name}/download";
+}
 
 function parse_email($email) 
 {
@@ -119,30 +146,30 @@ Function print_build($current, $next, $buildNr, $chan)
 		  <th>";
 
 	if ($current->file) {
-		print "<a href='" . URL_ROOT . "/" . $current->file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Windows Build\"/>&nbsp;Windows</a>&nbsp;&nbsp;
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . URL_ROOT . "/" . $current->file . ".log'>Build Log</a>";
+		print "<a href='" . download_link($current->file) . "' target='_blank'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Windows Build\"/>&nbsp;Windows</a>&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . download_link($current->file . ".log") . "' target='_blank'>Build Log</a>";
 	}
 
 	if ($current->linux_file) {
-		print "<br/><a href='" . URL_ROOT . "/" . $current->linux_file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build (32 bit)\"/>&nbsp;Linux (32 bit)</a>";
-		if (file_exists($current->linux_file . ".log")) {
-			print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . URL_ROOT . "/" . $current->linux_file . ".log'>Build Log</a>";
+		print "<br/><a href='" . download_link($current->linux_file) . "' target='_blank'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build (32 bit)\"/>&nbsp;Linux (32 bit)</a>";
+		if (download_exists($current->linux_file . ".log")) {
+			print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . download_link($current->linux_file . ".log") . "' target='_blank'>Build Log</a>";
 		}
 
 	}
 
 
 	if ($current->linux64_file) {
-		print "<br/><a href='" . URL_ROOT . "/" . $current->linux64_file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build (64 bit)\"/>&nbsp;Linux (64 bit)</a>";
-		if (file_exists($current->linux64_file . ".log")) {
-			print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . URL_ROOT . "/" . $current->linux64_file . ".log'>Build Log</a>";
+		print "<br/><a href='" . download_link($current->linux64_file) . "' target='_blank'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build (64 bit)\"/>&nbsp;Linux (64 bit)</a>";
+		if (download_exists($current->linux64_file . ".log")) {
+			print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . download_link($current->linux64_file . ".log") . "' target='_blank'>Build Log</a>";
 		}
 	}
 
 	if ($current->osx_file) {
-		print "<br/><a href='" . URL_ROOT . "/" . $current->osx_file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Mac OS X Build\"/>&nbsp;Mac OS X</a>";
-		if (file_exists($current->osx_file . ".log")) {
-			print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . URL_ROOT . "/" . $current->osx_file . ".log'>Build Log</a>";
+		print "<br/><a href='" . download_link($current->osx_file) . "' target='_blank'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Mac OS X Build\"/>&nbsp;Mac OS X</a>";
+		if (download_exists($current->osx_file . ".log")) {
+			print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . download_link($current->osx_file . ".log") . "' target='_blank'>Build Log</a>";
 		}
 	}
 
@@ -205,16 +232,16 @@ if ($res = $DB->query(kl_str_sql("select * from builds_all where chan=!s $where 
 		$DB->loadFromDbRow($build, $res, $row);
 
 		$file = "{$chan}_" . str_replace(".", "-", $build->version) . "_Setup.exe";
-		$build->file = file_exists($file) ? $file : false;
+		$build->file = download_exists($file) ? $file : false;
 
 		$linux_file = "{$chan}-i686-{$build->version}.tar.bz2";
-		$build->linux_file = file_exists($linux_file) ? $linux_file : false;
+		$build->linux_file = download_exists($linux_file) ? $linux_file : false;
 
 		$linux64_file = "{$chan}-x86_64-{$build->version}.tar.bz2";
-		$build->linux64_file = file_exists($linux64_file) ? $linux64_file : false;
+		$build->linux64_file = download_exists($linux64_file) ? $linux64_file : false;
 
 		$osx_file = "{$chan}_" . str_replace(".", "_", $build->version) . ".dmg";
-		$build->osx_file = file_exists($osx_file) ? $osx_file : false;
+		$build->osx_file = download_exists($osx_file) ? $osx_file : false;
 
 		$builds[] = $build;
 	}
