@@ -3,6 +3,7 @@
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
+define("TARGET", ' target="_blank" ');
 define("SITE_ROOT", realpath(dirname(__file__)));
 require_once SITE_ROOT . "/lib/init.php";
 
@@ -31,6 +32,7 @@ function download_exists($file_name)
 
 function download_link($file_name)
 {
+	// return "http://master.dl.sourceforge.net/projects/singularityview/alphas/{$file_name}";
 	return "http://sourceforge.net/projects/singularityview/files/alphas/{$file_name}/download";
 }
 
@@ -146,30 +148,30 @@ Function print_build($current, $next, $buildNr, $chan)
 		  <th>";
 
 	if ($current->file) {
-		print "<a href='" . download_link($current->file) . "' target='_blank'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Windows Build\"/>&nbsp;Windows</a>&nbsp;&nbsp;
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . download_link($current->file . ".log") . "' target='_blank'>Build Log</a>";
+		print "<a href='" . download_link($current->file) . "' " . TARGET . "><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Windows Build\"/>&nbsp;Windows</a>&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . download_link($current->file . ".log") . "' " . TARGET . ">Build Log</a>";
 	}
 
 	if ($current->linux_file) {
-		print "<br/><a href='" . download_link($current->linux_file) . "' target='_blank'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build (32 bit)\"/>&nbsp;Linux (32 bit)</a>";
+		print "<br/><a href='" . download_link($current->linux_file) . "' " . TARGET . "><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build (32 bit)\"/>&nbsp;Linux (32 bit)</a>";
 		if (download_exists($current->linux_file . ".log")) {
-			print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . download_link($current->linux_file . ".log") . "' target='_blank'>Build Log</a>";
+			print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . download_link($current->linux_file . ".log") . "' " . TARGET . ">Build Log</a>";
 		}
 
 	}
 
 
 	if ($current->linux64_file) {
-		print "<br/><a href='" . download_link($current->linux64_file) . "' target='_blank'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build (64 bit)\"/>&nbsp;Linux (64 bit)</a>";
+		print "<br/><a href='" . download_link($current->linux64_file) . "' " . TARGET . "><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build (64 bit)\"/>&nbsp;Linux (64 bit)</a>";
 		if (download_exists($current->linux64_file . ".log")) {
-			print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . download_link($current->linux64_file . ".log") . "' target='_blank'>Build Log</a>";
+			print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . download_link($current->linux64_file . ".log") . "' " . TARGET . ">Build Log</a>";
 		}
 	}
 
 	if ($current->osx_file) {
-		print "<br/><a href='" . download_link($current->osx_file) . "' target='_blank'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Mac OS X Build\"/>&nbsp;Mac OS X</a>";
+		print "<br/><a href='" . download_link($current->osx_file) . "' " . TARGET . "><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Mac OS X Build\"/>&nbsp;Mac OS X</a>";
 		if (download_exists($current->osx_file . ".log")) {
-			print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . download_link($current->osx_file . ".log") . "' target='_blank'>Build Log</a>";
+			print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . download_link($current->osx_file . ".log") . "' " . TARGET . ">Build Log</a>";
 		}
 	}
 
