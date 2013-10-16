@@ -1,8 +1,4 @@
 <?php
-
-ini_set('display_errors', 'On');
-error_reporting(E_ALL);
-
 define("TARGET", ' target="_blank" ');
 define("SITE_ROOT", realpath(dirname(__file__)));
 require_once SITE_ROOT . "/lib/init.php";
