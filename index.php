@@ -123,6 +123,11 @@ Function print_build($current, $next, $buildNr, $chan)
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . URL_ROOT . "/" . $current->file . ".log'>Build Log</a>";
 	}
 
+	if ($current->win64_file) {
+		print "<br/><a href='" . URL_ROOT . "/" . $current->win64_file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Windows 64 Build\"/>&nbsp;Windows (64 bit)</a>
+             &thinsp;<a class='dimmer' href='" . URL_ROOT . "/" . $current->win64_file . ".log'>Build Log</a>";
+	}
+
 	if ($current->linux_file) {
 		print "<br/><a href='" . URL_ROOT . "/" . $current->linux_file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Linux Build (32 bit)\"/>&nbsp;Linux (32 bit)</a>";
 		if (file_exists($current->linux_file . ".log")) {
@@ -142,7 +147,7 @@ Function print_build($current, $next, $buildNr, $chan)
 	if ($current->osx_file) {
 		print "<br/><a href='" . URL_ROOT . "/" . $current->osx_file . "'><img src=\"" . IMG_ROOT . "/dl.gif\" alt=\"Download Mac OS X Build\"/>&nbsp;Mac OS X</a>";
 		if (file_exists($current->osx_file . ".log")) {
-			print "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . URL_ROOT . "/" . $current->osx_file . ".log'>Build Log</a>";
+			print "&thinsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='dimmer' href='" . URL_ROOT . "/" . $current->osx_file . ".log'>Build Log</a>";
 		}
 	}
 
@@ -206,6 +211,9 @@ if ($res = $DB->query(kl_str_sql("select * from builds where chan=!s $where orde
 
 		$file = "{$chan}_" . str_replace(".", "-", $build->version) . "_Setup.exe";
 		$build->file = file_exists($file) ? $file : false;
+
+		$win64_file = "{$chan}_" . str_replace(".", "-", $build->version) . "_x86-64_Setup.exe";
+		$build->win64_file = file_exists($win64_file) ? $win64_file : false;
 
 		$linux_file = "{$chan}-i686-{$build->version}.tar.bz2";
 		$build->linux_file = file_exists($linux_file) ? $linux_file : false;
