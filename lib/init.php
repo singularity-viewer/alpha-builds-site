@@ -3,7 +3,7 @@ if (!defined('SITE_ROOT')) {
 	exit(1);
 }
 
-error_reporting(E_ALL ^ E_NOTICE);
+error_reporting(E_ALL & ~(E_NOTICE | E_STRICT));
 ini_set("display_errors", "true");
 
 if (!extension_loaded('kl')) {

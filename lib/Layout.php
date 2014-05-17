@@ -4,7 +4,7 @@
 class Layout
 {
 
-  function since($since)
+  static function since($since)
   {
     $since = time() - date("Z") - $since;
     $chunks = array(
@@ -29,7 +29,7 @@ class Layout
     return $print;
   }
 
-  function header()
+  static function header()
   { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -74,7 +74,7 @@ class Layout
 <?php
   }
 
-  function footer()
+  static function footer()
   {
   { ?>
        </div><!-- container -->
