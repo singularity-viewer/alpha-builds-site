@@ -82,9 +82,9 @@ class Layout
         <table style="width: 100%; border: none; padding: 0;"><tr>
          <td class="bottom-links"><a href="http://www.singularityviewer.org/">Singularity Main Site</a></td>
          <td class="bottom-links"><a href="http://www.singularityviewer.org/about">About</a></td>
-         <td class="bottom-links"><a href="http://code.google.com/p/singularity-viewer/issues/">Issue Tracker</a></td>
+         <td class="bottom-links"><a href="http://links.singularityviewer.org/?to=issues">Issue Tracker</a></td>
          <td class="bottom-links"><a href="https://github.com/singularity-viewer/SingularityViewer">Source Tracker</a></td>
-      <td width="50%" style="text-align: right;">&copy; 2012 Singularity Viewer Project</td>
+         <td width="50%" style="text-align: right;">&copy; 2015 Singularity Viewer Project</td>
         </tr></table>
        </div> 
       </div><!-- everything -->
