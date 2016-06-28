@@ -67,7 +67,7 @@ class Layout
   <body>
       <div id="everything">
       <div id="page-wrapper">
-      <div id="header"></div>
+      <a href="http://www.singularityviewer.org/"/><div id="header"></div></a>
       <div class="container"><a href="<?php print URL_ROOT ?>" style="font-size: 20px;">Automated Build System</a><br/><br/>
   
 
@@ -84,7 +84,7 @@ class Layout
          <td class="bottom-links"><a href="http://www.singularityviewer.org/about">About</a></td>
          <td class="bottom-links"><a href="http://links.singularityviewer.org/?to=issues">Issue Tracker</a></td>
          <td class="bottom-links"><a href="https://github.com/singularity-viewer/SingularityViewer">Source Tracker</a></td>
-         <td width="50%" style="text-align: right;">&copy; 2015 Singularity Viewer Project</td>
+         <td width="50%" style="text-align: right;">&copy; 2016 Singularity Viewer Project</td>
         </tr></table>
        </div> 
       </div><!-- everything -->
